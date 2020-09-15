@@ -3,11 +3,14 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 import pyotp 
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .models import phoneModel
+from .models import phoneModel, profile
 import base64
+
 # Create your views here.
 def index(request):
     return render (request, 'Adoptev/index.html')
@@ -15,30 +18,107 @@ def index(request):
 def book(request):
     return render (request, 'Adoptev/bookcargo.html')
 
+
+def book2(request):
+    return render (request, 'Adoptev/bookc2.html')
+
+def checkout(request):
+    return render(request, 'Adoptev/cashc.html')
+
+def myprofile(request):
+    if request.method == 'POST':
+        name = request.POST.get('name'),
+        Ph_no = request.POST.get('ph-no'),
+        email = request.POST.get('email'),
+        cname = request.POST.get('cname'),
+        gstno = request.POST.get('gstno'),
+        address = request.POST.get('address')
+        city = request.POST.get('city')
+        state = request.POST.get('state')
+        pincode = request.POST.get('pincode')
+        profile = profile(name=name, Ph_no=ph_no, email_address = email, company_name = cname, GST_no=gstno, Address= address,city= city, State= state,pincode= pincode)
+        profile.save()
+    return render (request, 'Adoptev/profile.html')
+
+def myorder(request):
+    return render(request, 'Adoptev/orders.html')
+
+
+def mytrip(request):
+    return render(request, 'Adoptev/trip.html')
+
+
+def myaddress(request):
+    return render(request, 'Adoptev/address.html')
+
 def loginn(request):
-    return render(request,'Adoptev/loginn.html')
+#     user = authenticate(username='john', password='secret')
+#     if user is not None:
+#         # A backend authenticated the credentials
+#     else:
+
+    return render(request,'Adoptev/login.html')
+
 
 def signnup(request):
-    return render(request,'Adoptev/signup.html')
-def signup(request):
-    if request.method =="POST":
+    if request.method == 'POST':
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-
-            return redirect("articles:list")
-
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')
     else:
         form = UserCreationForm()
-    return render(request,'Adoptev/signup.html',{'form':form})
+    return render(request, 'Adoptev/signup.html')
+    # , {'form': form}
+    
+
+    # return render(request,'Adoptev/signup.html')
+def signup(request):
+
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('/')
+    else:
+        form = UserCreationForm()
+        return render(request, 'signup.html', {'form': form})
+    # username = request.POST.get('username')
+    # email = request.POST.get('email')
+    # password = request.POST.get('password')
+    # user = User.objects.create_user(username,email,password)
+    # user.save()
+
+    # if request.method =="POST":
+    #     form = UserCreationForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+
+    #         return redirect("articles:list")
+
+    # else:
+    #     form = UserCreationForm()
+    # return render(request,'Adoptev/signup.html',{'form':form})
+
+
+def order(req):
+    return render(req, 'Adoptev/orderdetail.html')
 
 def login(request):
-    if request.method =="POST":
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            return redirect('articles')   
-    else:
-        form = AuthenticationForm()
+#     if request.method =="POST":
+#         form = AuthenticationForm(data=request.POST)
+#         if form.is_valid():
+#             return redirect('articles')   
+#     else:
+#         form = AuthenticationForm()
  
     return render(request, 'Adoptev/login.html',{'form':form})  
 

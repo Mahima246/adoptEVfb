@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.sites',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,6 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Adoptev.apps.AdoptevConfig',
     'rest_framework',
+
+
+    'allauth' ,  # <--
+    'allauth.account'  , # <--
+    'allauth.socialaccount'  , # <--
+    'allauth.socialaccount.providers.google'  , # <--
 ]
 
 MIDDLEWARE = [
@@ -77,12 +84,12 @@ WSGI_APPLICATION = 'Adoptev_backend.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'adoptev',
-        'USER': 'adoptevdjango',
-        'PASSWORD':'adoptevpassword',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.mysql',
+        # 'NAME': 'adoptev',
+        # 'USER': 'adoptevdjango',
+        # 'PASSWORD':'adoptevpassword',
 
         # 'OPTIONS': {
         #     'read_default_file': '/etc/mysql/my.cnf',
@@ -134,3 +141,24 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+
+AUTHENTICATION_BACKENDS = (
+ 'django.contrib.auth.backends.ModelBackend',
+ 'allauth.account.auth_backends.AuthenticationBackend',
+ )
+
+SITE_ID = 1
+LOGIN_REDIRECT_URL = '/'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
